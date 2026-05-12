@@ -40,6 +40,7 @@ from .const import (
     CONF_JSON_ATTRS_TEMPLATE,
     CONF_JSON_ATTRS_TOPIC,
     CONF_MANUFACTURER,
+    CONF_MESSAGE_EXPIRY_INTERVAL,
     CONF_ORIGIN,
     CONF_PAYLOAD_AVAILABLE,
     CONF_PAYLOAD_NOT_AVAILABLE,
@@ -66,6 +67,7 @@ SHARED_OPTIONS = [
     CONF_AVAILABILITY_TOPIC,
     CONF_COMMAND_TOPIC,
     CONF_ENCODING,
+    CONF_MESSAGE_EXPIRY_INTERVAL,
     CONF_PAYLOAD_AVAILABLE,
     CONF_PAYLOAD_NOT_AVAILABLE,
     CONF_STATE_TOPIC,
@@ -172,6 +174,7 @@ MQTT_ENTITY_COMMON_SCHEMA = _MQTT_AVAILABILITY_SCHEMA.extend(
         vol.Optional(CONF_JSON_ATTRS_TOPIC): valid_subscribe_topic,
         vol.Optional(CONF_JSON_ATTRS_TEMPLATE): cv.template,
         vol.Optional(CONF_DEFAULT_ENTITY_ID): cv.string,
+        vol.Optional(CONF_MESSAGE_EXPIRY_INTERVAL): cv.positive_int,
         vol.Optional(CONF_UNIQUE_ID): cv.string,
     }
 )
@@ -203,6 +206,7 @@ DEVICE_DISCOVERY_SCHEMA = _MQTT_AVAILABILITY_SCHEMA.extend(
         vol.Required(CONF_ORIGIN): MQTT_ORIGIN_INFO_SCHEMA,
         vol.Optional(CONF_STATE_TOPIC): valid_subscribe_topic,
         vol.Optional(CONF_COMMAND_TOPIC): valid_publish_topic,
+        vol.Optional(CONF_MESSAGE_EXPIRY_INTERVAL): cv.positive_int,
         vol.Optional(CONF_QOS): valid_qos_schema,
         vol.Optional(CONF_ENCODING): cv.string,
     }
