@@ -42,7 +42,8 @@ DEFAULT_MAX_BIND_VARS = 4000
 
 DB_WORKER_PREFIX = "DbWorker"
 
-ALL_DOMAIN_EXCLUDE_ATTRS = {ATTR_ATTRIBUTION, ATTR_RESTORED, ATTR_SUPPORTED_FEATURES}
+ALL_DOMAIN_EXCLUDE_ATTRS = {ATTR_ATTRIBUTION,
+                            ATTR_RESTORED, ATTR_SUPPORTED_FEATURES}
 
 ATTR_KEEP_DAYS = "keep_days"
 ATTR_REPACK = "repack"
@@ -84,3 +85,4 @@ class SupportedDialect(StrEnum):
     SQLITE = "sqlite"
     MYSQL = "mysql"
     POSTGRESQL = "postgresql"
+    COCKROACHDB = "cockroachdb"

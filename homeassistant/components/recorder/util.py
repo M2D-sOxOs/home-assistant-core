@@ -162,7 +162,8 @@ def execute_stmt_lambda_element(
     specific entities) since they are usually faster
     with .all().
     """
-    use_all = not start_time or ((end_time or dt_util.utcnow()) - start_time).days <= 1
+    use_all = not start_time or (
+        (end_time or dt_util.utcnow()) - start_time).days <= 1
     for tryno in range(RETRIES):
         try:
             if orm_rows:
@@ -205,7 +206,8 @@ def dburl_to_path(dburl: str) -> str:
 def last_run_was_recently_clean(cursor: SQLiteCursor) -> bool:
     """Verify the last recorder run was recently clean."""
 
-    cursor.execute("SELECT end FROM recorder_runs ORDER BY start DESC LIMIT 1;")
+    cursor.execute(
+        "SELECT end FROM recorder_runs ORDER BY start DESC LIMIT 1;")
     end_time = cursor.fetchone()
 
     if not end_time or not end_time[0]:
@@ -215,7 +217,8 @@ def last_run_was_recently_clean(cursor: SQLiteCursor) -> bool:
     assert last_run_end_time is not None
     now = dt_util.utcnow()
 
-    _LOGGER.debug("The last run ended at: %s (now: %s)", last_run_end_time, now)
+    _LOGGER.debug("The last run ended at: %s (now: %s)",
+                  last_run_end_time, now)
 
     if last_run_end_time + MAX_RESTART_TIME < now:
         return False
@@ -431,7 +434,8 @@ def async_create_backup_failure_issue(
         severity=ir.IssueSeverity.CRITICAL,
         learn_more_url="https://www.home-assistant.io/integrations/recorder",
         translation_key="backup_failed_out_of_resources",
-        translation_placeholders={"start_time": local_start_time.strftime("%H:%M:%S")},
+        translation_placeholders={
+            "start_time": local_start_time.strftime("%H:%M:%S")},
     )
 
 
@@ -454,9 +458,11 @@ def setup_connection_for_dialect(
             # WAL mode only needs to be setup once
             # instead of every time we open the sqlite connection
             # as its persistent and isn't free to call every time.
-            result = query_on_connection(dbapi_connection, "SELECT sqlite_version()")
+            result = query_on_connection(
+                dbapi_connection, "SELECT sqlite_version()")
             version_string = result[0][0]
-            version = _extract_version_from_server_response_or_raise(version_string)
+            version = _extract_version_from_server_response_or_raise(
+                version_string)
 
             if version < MIN_VERSION_SQLITE:
                 _raise_if_version_unsupported(
@@ -475,13 +481,15 @@ def setup_connection_for_dialect(
         # running in WAL mode.
         #
         synchronous = "NORMAL" if instance.commit_interval else "FULL"
-        execute_on_connection(dbapi_connection, f"PRAGMA synchronous={synchronous}")
+        execute_on_connection(
+            dbapi_connection, f"PRAGMA synchronous={synchronous}")
 
         # enable support for foreign keys
         execute_on_connection(dbapi_connection, "PRAGMA foreign_keys=ON")
 
     elif dialect_name == SupportedDialect.MYSQL:
-        execute_on_connection(dbapi_connection, "SET session wait_timeout=28800")
+        execute_on_connection(
+            dbapi_connection, "SET session wait_timeout=28800")
         if first_connection:
             result = query_on_connection(dbapi_connection, "SELECT VERSION()")
             version_string = result[0][0]
@@ -521,7 +529,7 @@ def setup_connection_for_dialect(
 
         # Ensure all times are using UTC to avoid issues with daylight savings
         execute_on_connection(dbapi_connection, "SET time_zone = '+00:00'")
-    elif dialect_name == SupportedDialect.POSTGRESQL:
+    elif dialect_name in (SupportedDialect.POSTGRESQL, SupportedDialect.COCKROACHDB):
         # PostgreSQL does not support a skip/loose index scan so its
         # also slow for large distinct queries:
         # https://wiki.postgresql.org/wiki/Loose_indexscan
@@ -530,7 +538,8 @@ def setup_connection_for_dialect(
         slow_range_in_select = True
         if first_connection:
             # server_version_num was added in 2006
-            result = query_on_connection(dbapi_connection, "SHOW server_version")
+            result = query_on_connection(
+                dbapi_connection, "SHOW server_version")
             version_string = result[0][0]
             version = _extract_version_from_server_response(version_string)
             if not version or version < MIN_VERSION_PGSQL:
@@ -699,7 +708,8 @@ def _database_job_retry_wrapper_func_or_meth[**_P, _R](
                 if attempt == attempts - 1 or not _is_retryable_error(instance, err):
                     raise
                 assert isinstance(err.orig, BaseException)  # noqa: PT017
-                _LOGGER.info("%s; %s failed, retrying", err.orig.args[1], description)
+                _LOGGER.info("%s; %s failed, retrying",
+                             err.orig.args[1], description)
                 time.sleep(instance.db_retry_wait)
 
         raise ValueError("attempts must be a positive integer")
@@ -834,7 +844,8 @@ def resolve_period(
             month_now = start_of_day.month
             new_month = (month_now - 1 + cal_offset) % 12 + 1
             new_year = start_of_day.year + (month_now - 1 + cal_offset) // 12
-            start_time = start_of_day.replace(year=new_year, month=new_month, day=1)
+            start_time = start_of_day.replace(
+                year=new_year, month=new_month, day=1)
             end_time = (start_time + timedelta(days=31)).replace(day=1)
         else:  # calendar_period = "year"
             start_time = start_of_day.replace(
@@ -901,7 +912,8 @@ def filter_unique_constraint_integrity_error(
         ):
             ignore = True
         if (
-            dialect_name == SupportedDialect.POSTGRESQL
+            dialect_name in (SupportedDialect.POSTGRESQL,
+                             SupportedDialect.COCKROACHDB)
             and err.orig
             and hasattr(err.orig, "pgcode")
             and err.orig.pgcode == "23505"

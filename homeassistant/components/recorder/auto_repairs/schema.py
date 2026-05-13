@@ -94,7 +94,8 @@ def _validate_table_schema_has_correct_collation(
     with session_scope(session=instance.get_session(), read_only=True) as session:
         table = table_object.__tablename__
         metadata_obj = MetaData()
-        reflected_table = Table(table, metadata_obj, autoload_with=instance.engine)
+        reflected_table = Table(table, metadata_obj,
+                                autoload_with=instance.engine)
         connection = session.connection()
         dialect_kwargs = reflected_table.dialect_kwargs
         # Check if the table has a collation set, if its not set than its
@@ -125,7 +126,8 @@ def _validate_table_schema_supports_utf8(
     # Mark the session as read_only to ensure that the test data is not committed
     # to the database and we always rollback when the scope is exited
     with session_scope(session=instance.get_session(), read_only=True) as session:
-        db_object = table_object(**{column.key: UTF8_NAME for column in columns})
+        db_object = table_object(
+            **{column.key: UTF8_NAME for column in columns})
         table = table_object.__tablename__
         # Try inserting some data which needs utf8mb4 support
         session.add(db_object)
@@ -155,6 +157,7 @@ def validate_db_schema_precision(
     if instance.dialect_name not in (
         SupportedDialect.MYSQL,
         SupportedDialect.POSTGRESQL,
+        SupportedDialect.COCKROACHDB,
     ):
         return schema_errors
     try:
@@ -184,7 +187,8 @@ def _validate_db_schema_precision(
             session.refresh(db_object)
             _check_columns(
                 schema_errors=schema_errors,
-                stored={column: getattr(db_object, column) for column in columns},
+                stored={column: getattr(db_object, column)
+                        for column in columns},
                 expected=dict.fromkeys(columns, PRECISE_NUMBER),
                 columns=columns,
                 table_name=table,
@@ -247,7 +251,8 @@ def correct_db_schema_utf8(
             _correct_table_character_set_and_collation,
         )
 
-        _correct_table_character_set_and_collation(table_name, instance.get_session)
+        _correct_table_character_set_and_collation(
+            table_name, instance.get_session)
 
 
 def correct_db_schema_precision(

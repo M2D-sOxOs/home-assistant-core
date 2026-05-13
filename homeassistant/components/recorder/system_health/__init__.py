@@ -12,6 +12,7 @@ from .. import get_instance
 from ..const import SupportedDialect
 from ..core import Recorder
 from ..util import session_scope
+from .cockroachdb import db_size_bytes as cockroachdb_db_size_bytes
 from .mysql import db_size_bytes as mysql_db_size_bytes
 from .postgresql import db_size_bytes as postgresql_db_size_bytes
 from .sqlite import db_size_bytes as sqlite_db_size_bytes
@@ -20,6 +21,7 @@ DIALECT_TO_GET_SIZE = {
     SupportedDialect.SQLITE: sqlite_db_size_bytes,
     SupportedDialect.MYSQL: mysql_db_size_bytes,
     SupportedDialect.POSTGRESQL: postgresql_db_size_bytes,
+    SupportedDialect.COCKROACHDB: cockroachdb_db_size_bytes,
 }
 
 

@@ -30,7 +30,7 @@ def repack_database(instance: Recorder) -> None:
         return
 
     # Execute postgresql vacuum command to free up space on disk
-    if dialect_name == SupportedDialect.POSTGRESQL:
+    if dialect_name in (SupportedDialect.POSTGRESQL, SupportedDialect.COCKROACHDB):
         _LOGGER.debug("Vacuuming SQL DB to free space")
         with instance.engine.connect().execution_options(
             isolation_level="AUTOCOMMIT"
