@@ -285,7 +285,7 @@ jobs:
           cache-gha: false
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
           context: machine/
-          cosign-base-identity: "https://github.com/m2d-soxos/home-assistant-core/.*"
+          cosign-base-identity: "https://github.com/M2D-sOxOs/home-assistant-core/.*"
           cosign-base-verify: ghcr.io/m2d-soxos/${{ matrix.arch }}-homeassistant-cockroachdb:${{ needs.init.outputs.version }}
           file: machine/${{ matrix.machine }}
           image: ghcr.io/m2d-soxos/${{ matrix.machine }}-homeassistant-cockroachdb
@@ -329,7 +329,7 @@ jobs:
             echo "Verifying ${arch} image signature..."
             cosign verify \
               --certificate-oidc-issuer https://token.actions.githubusercontent.com \
-              --certificate-identity-regexp https://github.com/m2d-soxos/home-assistant-core/.* \
+              --certificate-identity-regexp https://github.com/M2D-sOxOs/home-assistant-core/.* \
               "ghcr.io/m2d-soxos/${arch}-homeassistant-cockroachdb:${VERSION}"
           done
           echo "✓ All images verified successfully"
