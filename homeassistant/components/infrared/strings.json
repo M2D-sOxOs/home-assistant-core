@@ -1,10 +1,10 @@
 {
   "exceptions": {
     "component_not_loaded": {
-      "message": "Infrared component not loaded"
+      "message": "[%key:common::exceptions::infrared_component_not_loaded::message%]"
     },
     "entity_not_found": {
-      "message": "Infrared entity `{entity_id}` not found"
+      "message": "[%key:common::exceptions::infrared_entity_not_found::message%]"
     }
   }
 }
